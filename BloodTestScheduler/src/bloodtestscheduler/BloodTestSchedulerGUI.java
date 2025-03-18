@@ -7,6 +7,7 @@ package bloodtestscheduler;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.List;
 
 /**
  *
@@ -44,6 +45,7 @@ public class BloodTestSchedulerGUI extends javax.swing.JFrame {
     private void initComponents() {
 
         jButton1 = new javax.swing.JButton();
+        jCheckBox1 = new javax.swing.JCheckBox();
         NameLBL = new javax.swing.JLabel();
         NameTF = new javax.swing.JTextField();
         PriorityLBL = new javax.swing.JLabel();
@@ -59,8 +61,11 @@ public class BloodTestSchedulerGUI extends javax.swing.JFrame {
         DisplayAreaTA = new javax.swing.JTextArea();
         NoShowBTN = new javax.swing.JButton();
         HistoryBTN = new javax.swing.JButton();
+        NoShowCHB = new javax.swing.JCheckBox();
 
         jButton1.setText("jButton1");
+
+        jCheckBox1.setText("jCheckBox1");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Blood Test Scheduler");
@@ -129,6 +134,9 @@ public class BloodTestSchedulerGUI extends javax.swing.JFrame {
             }
         });
 
+        NoShowCHB.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        NoShowCHB.setText("No Show");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -139,22 +147,25 @@ public class BloodTestSchedulerGUI extends javax.swing.JFrame {
                     .addComponent(PriorityLBL)
                     .addComponent(NameLBL)
                     .addComponent(GPDetailsLBL)
-                    .addComponent(NextBTN)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(6, 6, 6)
                         .addComponent(AgeLBL, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(AddBTN, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(NoShowBTN, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(HistoryBTN, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(HistoryBTN, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(NextBTN, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(121, 121, 121)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 270, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(HospitalCHB)
-                        .addComponent(PriorityCMB, 0, 169, Short.MAX_VALUE)
-                        .addComponent(NameTF)
-                        .addComponent(GPDetailsTF)
-                        .addComponent(AgeTF)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(HospitalCHB)
+                            .addComponent(PriorityCMB, 0, 169, Short.MAX_VALUE)
+                            .addComponent(NameTF)
+                            .addComponent(GPDetailsTF)
+                            .addComponent(AgeTF))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(NoShowCHB, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(68, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -179,7 +190,8 @@ public class BloodTestSchedulerGUI extends javax.swing.JFrame {
                 .addGap(37, 37, 37)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(NextBTN)
-                    .addComponent(HospitalCHB))
+                    .addComponent(HospitalCHB)
+                    .addComponent(NoShowCHB))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(35, 35, 35)
@@ -199,34 +211,45 @@ public class BloodTestSchedulerGUI extends javax.swing.JFrame {
 
     private void AddBTNActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AddBTNActionPerformed
         // TODO add your handling code here:
-         String name = NameTF.getText();
+ String name = NameTF.getText();
     String priority = (String) PriorityCMB.getSelectedItem();
     String gpDetails = GPDetailsTF.getText();
     int age = Integer.parseInt(AgeTF.getText());
     boolean fromHospital = HospitalCHB.isSelected();
-    
-    // Create and add the patient to the scheduler
+    boolean isNoShow = NoShowCHB.isSelected();
+
     Person person = new Person(name, priority, gpDetails, age, fromHospital);
-    scheduler.addPerson(person);
-    
-     // Automatically save to file
-    FileHandler.savePatientsToFile(scheduler.getQueue());
-    
-    // Update the display area
-    DisplayAreaTA.setText("Person added:\n" +
-            "Name: " + name + "\n" +
-            "Priority: " + priority + "\n" +
-            "GP Details: " + gpDetails + "\n");
+
+    if (isNoShow) {
+        // Add to no-show tracker and save to file
+        noShowTracker.addNoShow(person);
+        FileHandler.saveNoShowToFile(person);
+        DisplayAreaTA.setText("Person marked as no-show and saved:\n" +
+                "Name: " + name + "\n" +
+                "Priority: " + priority + "\n" +
+                "GP Details: " + gpDetails + "\n");
+    } else {
+        // Add to scheduler and save to file
+        scheduler.addPerson(person);
+        FileHandler.savePatientsToFile(scheduler.getQueue());
+        DisplayAreaTA.setText("Person added and saved:\n" +
+                "Name: " + name + "\n" +
+                "Priority: " + priority + "\n" +
+                "GP Details: " + gpDetails + "\n");
+    }
     }//GEN-LAST:event_AddBTNActionPerformed
 
     private void NextBTNActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_NextBTNActionPerformed
         // TODO add your handling code here
         Person next = scheduler.getNextPerson();
              if (next != null) {
-                DisplayAreaTA.setText("Next Person:\n" +
-                "Name: " + next.getName() + "\n" +
+                DisplayAreaTA.setText("""
+                                      Next Person:
+                                      Name: """ + next.getName() + "\n" +
                 "Priority: " + next.getPriority() + "\n" +
-                "GP Details: " + next.getGPDetails() + "\n");
+                "GP Details: " + next.getGPDetails() + "\n" +
+                "Age: " + next.getAge() + "\n" +
+                "From Hospital: " + (next.isFromHospital() ? "Yes" : "No") + "\n");
             } else {
                  DisplayAreaTA.setText("No more people in the queue.");
             }
@@ -239,22 +262,24 @@ public class BloodTestSchedulerGUI extends javax.swing.JFrame {
 
     private void NoShowBTNActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_NoShowBTNActionPerformed
         // TODO add your handling code here:
-          Person noShow = scheduler.getNextPerson();
-    if (noShow != null) {
-        
-        // Add the no-show patient to the tracker
-        noShowTracker.addNoShow(noShow);
-        
-         // Automatically save to file
-        FileHandler.savePatientsToFile(scheduler.getQueue());
-        
-        DisplayAreaTA.setText("Marked as No-Show:\n" +
-                "Name: " + noShow.getName() + "\n" +
-                "Priority: " + noShow.getPriority() + "\n" +
-                "GP Details: " + noShow.getGPDetails() + "\n");
-    } else {
-        DisplayAreaTA.setText("No more people to mark as no-show.");
+      List<Person> noShowPatients = FileHandler.loadNoShowFromFile();
+    StringBuilder noShowList = new StringBuilder("No-Show Patients:\n");
+
+    for (Person person : noShowPatients) {
+        noShowList.append("Name: ").append(person.getName())
+                  .append(", Priority: ").append(person.getPriority())
+                  .append(", GP Details: ").append(person.getGPDetails())
+                  .append(", Age: ").append(person.getAge())
+                  .append(", From Hospital: ").append(person.isFromHospital() ? "Yes" : "No")
+                  .append("\n");
     }
+
+    if (noShowPatients.isEmpty()) {
+        noShowList.append("No patients have been marked as no-show.");
+    }
+
+    DisplayAreaTA.setText(noShowList.toString());
+
         
     }//GEN-LAST:event_NoShowBTNActionPerformed
 
@@ -321,9 +346,11 @@ public class BloodTestSchedulerGUI extends javax.swing.JFrame {
     private javax.swing.JTextField NameTF;
     private javax.swing.JButton NextBTN;
     private javax.swing.JButton NoShowBTN;
+    private javax.swing.JCheckBox NoShowCHB;
     private javax.swing.JComboBox<String> PriorityCMB;
     private javax.swing.JLabel PriorityLBL;
     private javax.swing.JButton jButton1;
+    private javax.swing.JCheckBox jCheckBox1;
     private javax.swing.JScrollPane jScrollPane1;
     // End of variables declaration//GEN-END:variables
 }
