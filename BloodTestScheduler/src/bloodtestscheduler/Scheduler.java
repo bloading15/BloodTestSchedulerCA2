@@ -28,7 +28,18 @@ public class Scheduler {
             } else if (!p1.isFromHospital() && p2.isFromHospital()) {
                 return 1;
             }
-            // Sort by age: Older patients get higher priority
+            
+            //  Sort by age priority People Over the age of 50 and under the age of 13 get priorty 
+            boolean p1AgePriority = (p1.getAge() > 50 || p1.getAge() < 13);
+            boolean p2AgePriority = (p2.getAge() > 50 || p2.getAge() < 13);
+
+            if (p1AgePriority && !p2AgePriority) {
+                return -1; // p1 gets higher priority
+            } else if (!p1AgePriority && p2AgePriority) {
+                return 1; // p2 gets higher priority
+            }
+
+            // Step 4: Sort by age (natural order, older first)
             return Integer.compare(p2.getAge(), p1.getAge());
         });
     }
