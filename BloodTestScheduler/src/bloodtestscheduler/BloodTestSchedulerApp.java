@@ -26,14 +26,16 @@ public class BloodTestSchedulerApp {
         scheduler.addPerson(new Person("Catherine Davis", "Low", "Dr. Allen", 30, false));
         scheduler.addPerson(new Person("David Evans", "Urgent", "Dr. Clark", 50, true));
         scheduler.addPerson(new Person("Eleanor Foster", "Medium", "Dr. Young", 70, false));
-
-        // Save hardcoded patients to file
-        FileHandler.savePatientsToFile(scheduler.getQueue());
+        
+   
         
          // Add no-show patients
         noShowTracker.addNoShow(new Person("Frank Green", "Urgent", "Dr. White", 55, false));
         noShowTracker.addNoShow(new Person("Grace Hall", "Low", "Dr. Brown", 22, true));
         noShowTracker.addNoShow(new Person("Hannah Moore", "Medium", "Dr. Taylor", 65, false));
+        
+        FileHandler.savePatientsToFile(scheduler.getQueue());
+        
 
 
         // Launch the GUI
@@ -44,5 +46,6 @@ public class BloodTestSchedulerApp {
     
     }
     
+    }
     
-}
+
