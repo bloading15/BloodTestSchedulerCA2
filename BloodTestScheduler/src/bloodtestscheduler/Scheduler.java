@@ -1,8 +1,6 @@
 package bloodtestscheduler;
 
 
-import bloodtestscheduler.Person;
-import bloodtestscheduler.SchedulerInterface;
 import java.util.PriorityQueue;
 
 /*
@@ -14,26 +12,36 @@ import java.util.PriorityQueue;
  *
  * @author General
  */
-public class Scheduler implements SchedulerInterface {
-    private PriorityQueue<Person> queue;
-    
-    public Scheduler(){
-        queue = new PriorityQueue<>();
-    }
-    
+public class Scheduler {
+   private PriorityQueue<Person> queue;
 
-@Override
+    public Scheduler() {
+        queue = new PriorityQueue<>((p1, p2) -> {
+            // Sort by priority: Urgent > Medium > Low
+            int priorityComparison = p1.getPriority().compareTo(p2.getPriority());
+            if (priorityComparison != 0) {
+                return priorityComparison;
+            }
+            // Sort by hospital status: Hospital patients get higher priority
+            if (p1.isFromHospital() && !p2.isFromHospital()) {
+                return -1;
+            } else if (!p1.isFromHospital() && p2.isFromHospital()) {
+                return 1;
+            }
+            // Sort by age: Older patients get higher priority
+            return Integer.compare(p2.getAge(), p1.getAge());
+        });
+    }
+
     public void addPerson(Person person) {
         queue.add(person);
     }
- 
-@Override 
-    public Person getNextPerson(){
+
+    public Person getNextPerson() {
         return queue.poll();
     }
-    
-@Override 
-    public PriorityQueue<Person> getQueue(){
+
+    public PriorityQueue<Person> getQueue() {
         return queue;
     }
 }

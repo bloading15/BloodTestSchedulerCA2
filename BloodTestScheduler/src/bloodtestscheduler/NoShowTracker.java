@@ -12,23 +12,23 @@ import java.util.Queue;
  * @author General
  */
 public class NoShowTracker {
-     private Queue<Person> noShowQueue;
-    
-    public NoShowTracker(){
+    private Queue<Person> noShowQueue;
+
+    public NoShowTracker() {
         noShowQueue = new LinkedList<>();
     }
-    
-    public void addNoShow(Person person){
+
+    public void addNoShow(Person person) {
         if (noShowQueue.size() >= 5) {
-            noShowQueue.poll();
+            noShowQueue.poll(); // Remove the oldest entry
         }
         noShowQueue.add(person);
     }
-    
-    public Queue<Person> getNoShows(){
+
+    public Queue<Person> getNoShows() {
         return new LinkedList<>(noShowQueue);
+    }
     }
 
 
 
-}
