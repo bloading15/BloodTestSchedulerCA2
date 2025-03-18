@@ -1,5 +1,5 @@
-Catherine Davis,Low,Dr. Allen,30,false
-Eleanor Foster,Medium,Dr. Young,70,false
-Bob Brown,Medium,Dr. Taylor,67,true
-Alice Johnson,Urgent,Dr. Smith,45,false
 David Evans,Urgent,Dr. Clark,50,true
+Alice Johnson,Urgent,Dr. Smith,45,false
+Catherine Davis,Low,Dr. Allen,30,false
+Bob Brown,Medium,Dr. Taylor,67,true
+Eleanor Foster,Medium,Dr. Young,70,false
